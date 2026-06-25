@@ -280,7 +280,10 @@ npm run dev
 ---
 
 ## Flujo recomendado
-
+0. Verificar que los 3 microservicios estén levantados y accesibles desde Swagger:
+   - `users-service`
+   - `categories-service`
+   - `expenses-service`
 1. Registrar usuario en `users-service`.
 2. Iniciar sesión y obtener JWT.
 3. Usar `Authorization: Bearer <token>` para consultar categorías y gastos.
