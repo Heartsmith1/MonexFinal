@@ -307,7 +307,7 @@ POST /api/auth/register → Registrar nuevo usuario
 POST /api/auth/login → Obtener JWT
 ```
 
-### 2. Configurar tarjeta de crédito (opcional)
+### 2. Configurar tarjeta de crédito (Solo en caso de tener tarjeta de credito)
 ```
 POST /api/tarjeta/configuracion → Guardar configuración de tarjeta
 GET /api/tarjeta/configuracion → Ver configuración guardada
