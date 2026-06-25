@@ -40,6 +40,17 @@ Monex/
 
 ---
 
+## URLs de producción
+
+- `users-service`: https://users-service-y9rl.onrender.com
+- `categories-service`: https://categories-service-75op.onrender.com
+- `expenses-service`: https://expenses-service-x5hz.onrender.com
+- `frontend`: https://monex-frontend-pi.vercel.app/
+
+> Local solo si Render/Vercel no están disponibles.
+
+---
+
 ## users-service
 
 ### Descripción
@@ -55,12 +66,13 @@ Microservicio de autenticación y gestión de usuarios con:
 
 ### Configuración
 
-- Puerto: `8081`
-- Swagger: `http://localhost:8081/swagger-ui.html`
+- Producción en Render: `https://users-service-y9rl.onrender.com`
+- Swagger: `https://users-service-y9rl.onrender.com/swagger-ui/index.html#/`
+- Local (fallback solo si Render no está disponible): `http://localhost:8081`
 
 ### Endpoints clave
 
-Base URL: `http://localhost:8081`
+Base URL de producción: `https://users-service-y9rl.onrender.com`
 
 Autenticación:
 
@@ -95,13 +107,14 @@ Microservicio de categorías con control de acceso por JWT y gestión de recurso
 
 ### Configuración
 
-- Puerto: `8082`
+- Producción en Render: `https://categories-service-75op.onrender.com`
 - Base de datos: `categorias`
-- Swagger: `http://localhost:8082/swagger-ui.html`
+- Swagger: `https://categories-service-75op.onrender.com/swagger-ui/index.html#/`
+- Local (fallback solo si Render no está disponible): `http://localhost:8082`
 
 ### Endpoints clave
 
-Base URL: `http://localhost:8082`
+Base URL de producción: `https://categories-service-75op.onrender.com`
 
 - `GET /api/categorias`
 - `GET /api/categorias/paginadas`
@@ -120,13 +133,14 @@ Microservicio de gastos con filtros, cuotas, paginación y estimación mensual.
 
 ### Configuración
 
-- Puerto: `8083`
+- Producción en Render: `https://expenses-service-x5hz.onrender.com`
 - Base de datos: `gastos`
-- Swagger: `http://localhost:8083/swagger-ui.html`
+- Swagger: `https://expenses-service-x5hz.onrender.com/swagger-ui/index.html#/`
+- Local (fallback solo si Render no está disponible): `http://localhost:8083`
 
 ### Endpoints clave
 
-Base URL: `http://localhost:8083`
+Base URL de producción: `https://expenses-service-x5hz.onrender.com`
 
 - `GET /api/expenses`
 - `GET /api/expenses/paginadas`
@@ -153,6 +167,11 @@ Base URL: `http://localhost:8083`
 
 Aplicación web construida con React y Vite.
 
+### Producción
+
+- Frontend desplegado en Vercel: `https://monex-frontend-pi.vercel.app/`
+- Local (fallback solo si Vercel no está disponible): `http://localhost:5173`
+
 ### Comandos
 
 ```bash
@@ -160,8 +179,6 @@ cd Monex/frontend
 npm install
 npm run dev
 ```
-
-Servidor local: `http://localhost:5173`
 
 ---
 
