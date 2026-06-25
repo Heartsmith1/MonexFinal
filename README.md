@@ -1,258 +1,159 @@
 # Monex
 
-Proyecto de titulo Monex con arquitectura de microservicios backend en Spring Boot.
+Proyecto de título Monex con arquitectura de microservicios backend en Spring Boot y frontend en React + Vite.
 
-## Estado actual
+## Estado del proyecto
 
-Actualmente el repositorio contiene 3 microservicios backend funcionales:
+El repositorio contiene los siguientes módulos:
 
-- `Monex/Bknd_User`: autenticacion y gestion de usuarios (Puerto 8081).
-- `Monex/Bknd_Categories`: CRUD de categorias con JWT (Puerto 8082).
-- `Monex/bknd-expenses`: Gestion de gastos del usuario (Puerto 8083).
+- `Monex/users-service`: autenticación, usuarios, recuperación de contraseña y configuración de tarjeta de crédito.
+- `Monex/categories-service`: CRUD de categorías con seguridad basada en JWT.
+- `Monex/expenses-service`: CRUD de gastos con filtros, cuotas y estimación mensual.
+- `Monex/frontend`: aplicación web en React + Vite.
 
-### Base de datos
-
-Todos los servicios estan configurados con **PostgreSQL** para desarrollo local.
-Migracion completada desde MySQL.
-
-## Stack tecnologico
+## Tecnologías principales
 
 - Java 21
-- Spring Boot 4.0.5
-- Spring Web MVC
+- Spring Boot 4.0.5 (`users-service`, `categories-service`)
+- Spring Boot 3.4.4 (`expenses-service`)
+- Spring Web MVC / Spring Web
 - Spring Data JPA
 - PostgreSQL
 - Bean Validation
 - JWT (`jjwt` 0.12.3)
-- Swagger/OpenAPI (`springdoc-openapi` 2.4.0 - 2.8.14)
+- Swagger/OpenAPI (`springdoc-openapi`)
 - Lombok
 - Maven
+- React 19
+- Vite 7
 
-## Estructura del repo
+## Estructura del repositorio
 
 ```text
 Monex/
-	Bknd_User/
-	Bknd_Categories/
-	bknd-expenses/
-	frontend/
+  docker-compose.yml
+  users-service/
+  categories-service/
+  expenses-service/
+  frontend/
 ```
 
-## Backend de usuarios (`Bknd_User`)
+---
 
-### Resumen
+## users-service
 
-Este servicio maneja:
+### Descripción
 
-- Registro de usuario.
-- Login y emision de token JWT.
-- Consulta de perfil autenticado.
-- Operaciones de usuario (consulta, actualizacion, eliminacion y cambio de password).
+Microservicio de autenticación y gestión de usuarios con:
 
-### Configuracion actual
+- registro y login
+- login con Google
+- recuperación de contraseña por correo
+- perfiles de usuario
+- cambio de contraseña
+- configuración de tarjeta de crédito
 
-- Puerto: `8081`.
-- Base de datos: `usuarios` en PostgreSQL.
-- URL de conexion: `jdbc:postgresql://localhost:5432/usuarios`
-- Usuario BD: `postgres`
-- JWT expiration: `86400000` ms (24 horas)
+### Configuración
 
-### Endpoints principales
+- Puerto: `8081`
+- Swagger: `http://localhost:8081/swagger-ui.html`
+
+### Endpoints clave
 
 Base URL: `http://localhost:8081`
 
-**Autenticación:**
+Autenticación:
 
-- `POST /api/auth/register` - Registro de usuario
-- `POST /api/auth/login` - Login y obtencion de JWT
-- `GET /api/auth/me` (requiere token) - Obtener perfil autenticado
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `POST /api/auth/google`
+- `GET /api/auth/me`
+- `POST /api/auth/recuperar/enviar-codigo`
+- `POST /api/auth/recuperar/verificar-codigo`
+- `POST /api/auth/recuperar/cambiar-contrasena`
 
-**Usuarios:**
+Usuarios:
 
-- `GET /api/users/{id}` (requiere token) - Obtener usuario por ID
-- `GET /api/users/me` (requiere token) - Obtener datos del usuario autenticado
-- `PUT /api/users/{id}` (requiere token) - Actualizar usuario
-- `DELETE /api/users/{id}` (requiere token) - Eliminar usuario
-- `POST /api/users/cambiar-password` (requiere token) - Cambiar contraseña
+- `GET /api/users/{id}`
+- `GET /api/users/me`
+- `PUT /api/users/{id}`
+- `DELETE /api/users/{id}`
+- `POST /api/users/cambiar-password`
 
-**Configuración de Tarjeta de Crédito:**
+Tarjeta de crédito:
 
-- `GET /api/tarjeta/configuracion` (requiere token) - Obtener configuración de tarjeta
-- `POST /api/tarjeta/configuracion` (requiere token) - Guardar/actualizar configuración (fecha de facturación, sueldo, cupo)
+- `GET /api/tarjeta/configuracion`
+- `POST /api/tarjeta/configuracion`
 
-Swagger:
+---
 
-- `http://localhost:8081/swagger-ui.html`
+## categories-service
 
-## Backend de categorias (`Bknd_Categories`)
+### Descripción
 
-### Resumen
+Microservicio de categorías con control de acceso por JWT y gestión de recursos por usuario.
 
-Este servicio maneja:
-
-- Listado y consulta de categorias.
-- Creacion, actualizacion y eliminacion de categorias.
-- Asociacion de `createdByUserId` a partir del `userId` presente en el JWT.
-
-### Configuracion actual
+### Configuración
 
 - Puerto: `8082`
-- Base de datos: `categorias` en PostgreSQL.
-- URL de conexion: `jdbc:postgresql://localhost:5432/categorias`
-- Usuario BD: `postgres`
+- Base de datos: `categorias`
+- Swagger: `http://localhost:8082/swagger-ui.html`
 
-### Endpoints principales
+### Endpoints clave
 
 Base URL: `http://localhost:8082`
 
 - `GET /api/categorias`
+- `GET /api/categorias/paginadas`
 - `GET /api/categorias/{id}`
-- `POST /api/categorias` (requiere `Authorization: Bearer <token>`)
-- `PUT /api/categorias/{id}` (requiere `Authorization: Bearer <token>`)
-- `DELETE /api/categorias/{id}` (requiere `Authorization: Bearer <token>`)
+- `POST /api/categorias`
+- `PUT /api/categorias/{id}`
+- `DELETE /api/categorias/{id}`
 
-Swagger:
+---
 
-- `http://localhost:8082/swagger-ui.html`
+## expenses-service
 
-## Backend de gastos (`bknd-expenses`)
+### Descripción
 
-### Resumen
+Microservicio de gastos con filtros, cuotas, paginación y estimación mensual.
 
-Este servicio maneja:
-
-- Listado y consulta de gastos del usuario con filtros avanzados.
-- Creacion, actualizacion y eliminacion de gastos.
-- Soporte para múltiples métodos de pago: EFECTIVO, DEBITO, CREDITO.
-- Soporte para pagos con cuotas (solo en método CREDITO).
-- Comisiones asociadas a gastos.
-- Filtrado avanzado por categoría, método de pago, rango de fechas, y combinaciones.
-- Calculo de estimación mensual de gastos con tarjeta de crédito.
-- Validaciones automáticas de datos y seguridad basada en JWT.
-
-### Configuracion actual
+### Configuración
 
 - Puerto: `8083`
-- Base de datos: `gastos` en PostgreSQL.
-- URL de conexion: `jdbc:postgresql://localhost:5432/gastos`
-- Usuario BD: `postgres`
-- JWT expiration: `86400000` ms (24 horas)
+- Base de datos: `gastos`
+- Swagger: `http://localhost:8083/swagger-ui.html`
 
-### Endpoints principales
+### Endpoints clave
 
 Base URL: `http://localhost:8083`
 
-**CRUD básico:**
+- `GET /api/expenses`
+- `GET /api/expenses/paginadas`
+- `GET /api/expenses/{id}`
+- `POST /api/expenses`
+- `PUT /api/expenses/{id}`
+- `DELETE /api/expenses/{id}`
+- `GET /api/expenses/payment-method/{paymentMethod}`
+- `GET /api/expenses/category/{categoryId}`
+- `GET /api/expenses/date-range?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD`
+- `GET /api/expenses/monthly-estimate`
 
-- `GET /api/expenses` - Listar todos los gastos del usuario (soporta filtros opcionales)
-- `GET /api/expenses/{id}` (requiere token) - Obtener gasto específico
-- `POST /api/expenses` (requiere token) - Crear nuevo gasto
-- `PUT /api/expenses/{id}` (requiere token) - Actualizar gasto
-- `DELETE /api/expenses/{id}` (requiere token) - Eliminar gasto
+### Métodos de pago válidos
 
-**Filtros y búsquedas:**
+- `EFECTIVO`
+- `DEBITO`
+- `CREDITO`
 
-- `GET /api/expenses/payment-method/{paymentMethod}` - Filtrar por método de pago (EFECTIVO, DEBITO, CREDITO)
-- `GET /api/expenses/category/{categoryId}` - Filtrar por categoría
-- `GET /api/expenses/date-range?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD` - Filtrar por rango de fechas
+---
 
-**Parámetros de query (GET /api/expenses):**
+## frontend
 
-- `categoryId` (opcional) - ID de categoría
-- `paymentMethod` (opcional) - Método de pago
-- `startDate` (opcional) - Fecha inicio (YYYY-MM-DD)
-- `endDate` (opcional) - Fecha fin (YYYY-MM-DD)
+### Descripción
 
-**Estadísticas:**
+Aplicación web construida con React y Vite.
 
-- `GET /api/expenses/monthly-estimate` (requiere token) - Calcular estimación mensual de gastos con crédito
-
-**Campos soportados en gastos:**
-
-- `name` - Nombre del gasto
-- `categoryId` - ID de la categoría
-- `categoryName` - Nombre de la categoría
-- `date` - Fecha del gasto
-- `amount` - Monto (BigDecimal)
-- `commission` - Comisión asociada (opcional, default 0)
-- `paymentMethod` - Método de pago (EFECTIVO, DEBITO, CREDITO)
-- `installments` - Cuotas (solo para CREDITO, default 1)
-
-Swagger:
-
-- `http://localhost:8083/swagger-ui.html`
-
-## CORS actual
-
-Todos los backends permiten origen:
-
-- `http://localhost:5173` (Frontend Vite)
-
-## Prerrequisitos
-
-- Java 21
-- PostgreSQL 12+
-- Node.js (para el frontend)
-- Maven 3.9+
-
-## Como ejecutar
-
-### 1) Configurar PostgreSQL
-
-Asegúrate de tener PostgreSQL corriendo localmente en `localhost:5432`.
-
-
-Las bases de datos se crearán automaticamente con `spring.jpa.hibernate.ddl-auto=update`.
-
-### 2) Ejecutar backend de usuarios
-
-```bash
-cd Monex/Bknd_User
-./mvnw spring-boot:run
-```
-
-En Windows (PowerShell):
-
-```powershell
-cd Monex/Bknd_User
-.\mvnw.cmd spring-boot:run
-```
-
-Servicio disponible en: `http://localhost:8081`
-
-### 3) Ejecutar backend de categorias
-
-```bash
-cd Monex/Bknd_Categories
-./mvnw spring-boot:run
-```
-
-En Windows (PowerShell):
-
-```powershell
-cd Monex/Bknd_Categories
-.\mvnw.cmd spring-boot:run
-```
-
-Servicio disponible en: `http://localhost:8082`
-
-### 4) Ejecutar backend de gastos
-
-```bash
-cd Monex/bknd-expenses
-./mvnw spring-boot:run
-```
-
-En Windows (PowerShell):
-
-```powershell
-cd Monex/bknd-expenses
-.\mvnw.cmd spring-boot:run
-```
-
-Servicio disponible en: `http://localhost:8083`
-
-### 5) Ejecutar frontend
+### Comandos
 
 ```bash
 cd Monex/frontend
@@ -260,24 +161,125 @@ npm install
 npm run dev
 ```
 
-Frontend disponible en: `http://localhost:5173`
+Servidor local: `http://localhost:5173`
 
-## Flujo recomendado entre servicios
+---
 
-1. Registrar/login en `Bknd_User` (Puerto 8081) para obtener JWT.
-2. Usar el token JWT en `Authorization: Bearer <token>` para acceder a endpoints protegidos de:
-   - `Bknd_Categories` (Puerto 8082)
-   - `bknd-expenses` (Puerto 8083)
+## Docker Compose
 
-## Consideraciones importantes
+El archivo `Monex/docker-compose.yml` levanta los siguientes servicios:
 
-- **JWT Secret**: Todos los backends deben tener el mismo `jwt.secret` para validar tokens correctamente.
-- **CORS**: Configurado para permitir requests desde `http://localhost:5173`.
-- **Base de datos**: Las migraciones se aplican automaticamente con Hibernate (`ddl-auto=update`).
-- **Swagger/OpenAPI**: Disponible en `/swagger-ui.html` de cada servicio para explorar endpoints.
-- **Métodos de pago**: Los valores válidos son: `EFECTIVO`, `DEBITO`, `CREDITO` (se normalizan automáticamente a mayúsculas).
-- **Cuotas**: Solo aplica para pagos con CREDITO. Si se omite, por defecto es 1 cuota.
-- **Configuración de tarjeta**: En Bknd_User se puede guardar la fecha de facturación, sueldo del mes y cupo de la tarjeta de crédito.
+- `postgres-users` → puerto `5433`
+- `users-service` → puerto `8081`
+- `postgres-categories` → puerto `5434`
+- `categories-service` → puerto `8082`
+- `postgres-expenses` → puerto `5435`
+- `expenses-service` → puerto `8083`
+
+---
+
+## Prerrequisitos
+
+- Java 21
+- Maven 3.9+
+- Node.js 18+ / npm 10+
+- PostgreSQL 12+
+
+---
+
+## Ejecución local
+
+### Opción 1: Con Docker Compose
+
+```bash
+cd Monex
+docker compose up --build
+```
+
+### Opción 2: Sin Docker
+
+#### Backend usuarios
+
+```powershell
+cd Monex/users-service
+.\mvnw.cmd spring-boot:run
+```
+
+#### Backend categorías
+
+```powershell
+cd Monex/categories-service
+.\mvnw.cmd spring-boot:run
+```
+
+#### Backend gastos
+
+```powershell
+cd Monex/expenses-service
+.\mvnw.cmd spring-boot:run
+```
+
+#### Frontend
+
+```bash
+cd Monex/frontend
+npm install
+npm run dev
+```
+
+---
+
+## Variables de entorno importantes
+
+### users-service
+
+- `PORT` (default `8081`)
+- `SPRING_DATASOURCE_URL`
+- `SPRING_DATASOURCE_USERNAME`
+- `SPRING_DATASOURCE_PASSWORD`
+- `JWT_SECRET`
+- `JWT_EXPIRATION` (default `86400000`)
+- `GOOGLE_CLIENT_ID`
+- `RESEND_API_KEY`
+- `RESEND_FROM_EMAIL`
+
+### categories-service
+
+- `PORT` (default `8082`)
+- `SPRING_DATASOURCE_URL` (default `jdbc:postgresql://localhost:5432/categorias`)
+- `SPRING_DATASOURCE_USERNAME` (default `postgres`)
+- `SPRING_DATASOURCE_PASSWORD` (default `1234`)
+- `JWT_SECRET` (default `clave-super-secreta-para-testeo-1234567890`)
+
+### expenses-service
+
+- `PORT` (default `8083`)
+- `SPRING_DATASOURCE_URL`
+- `SPRING_DATASOURCE_USERNAME`
+- `SPRING_DATASOURCE_PASSWORD`
+- `JWT_SECRET`
+- `JWT_EXPIRATION` (default `86400000`)
+
+---
+
+## Flujo recomendado
+
+1. Registrar usuario en `users-service`.
+2. Iniciar sesión y obtener JWT.
+3. Usar `Authorization: Bearer <token>` para consultar categorías y gastos.
+4. Crear categorías en `categories-service`.
+5. Crear y consultar gastos en `expenses-service`.
+6. Consultar estimación mensual con `GET /api/expenses/monthly-estimate`.
+
+---
+
+## Notas
+
+- El JWT secret debe ser el mismo en todos los servicios para validar correctamente los tokens.
+- `categories-service` y `expenses-service` requieren token JWT en `Authorization: Bearer <token>`.
+- Cada backend expone documentación OpenAPI en `/swagger-ui.html`.
+- `users-service` soporta recuperación de contraseña y login con Google.
+
 - **Estimación mensual**: El endpoint `/api/expenses/monthly-estimate` calcula el total de cuotas activas para el mes actual en pagos con crédito.
 
 ## Flujo de uso recomendado

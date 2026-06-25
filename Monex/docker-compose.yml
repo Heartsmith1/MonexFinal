@@ -1,0 +1,96 @@
+services:
+
+    postgres-users:
+        image: postgres:16
+        container_name: postgres-users
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: usuarios
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: 1234
+        ports:
+            - "5433:5432"
+        volumes:
+            - postgres_users_data:/var/lib/postgresql/data
+
+    users-service:
+        build:
+            context: ./users-service
+        container_name: users-service
+        restart: unless-stopped
+        depends_on:
+            - postgres-users
+        environment:
+            PORT: 8081
+            SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-users:5432/usuarios
+            SPRING_DATASOURCE_USERNAME: postgres
+            SPRING_DATASOURCE_PASSWORD: 1234
+            JWT_SECRET: clave-super-secreta-para-testeo-1234567890
+            RESEND_API_KEY: test-local
+        ports:
+            - "8081:8081"
+
+    postgres-categories:
+        image: postgres:16
+        container_name: postgres-categories
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: categorias
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: 1234
+        ports:
+            - "5434:5432"
+        volumes:
+            - postgres_categories_data:/var/lib/postgresql/data
+
+    categories-service:
+        build:
+            context: ./categories-service
+        container_name: categories-service
+        restart: unless-stopped
+        depends_on:
+            - postgres-categories
+        environment:
+            PORT: 8082
+            SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-categories:5432/categorias
+            SPRING_DATASOURCE_USERNAME: postgres
+            SPRING_DATASOURCE_PASSWORD: 1234
+            JWT_SECRET: clave-super-secreta-para-testeo-1234567890
+        ports:
+            - "8082:8082"
+
+    postgres-expenses:
+        image: postgres:16
+        container_name: postgres-expenses
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: gastos
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: 1234
+        ports:
+            - "5435:5432"
+        volumes:
+            - postgres_expenses_data:/var/lib/postgresql/data
+
+    expenses-service:
+        build:
+            context: ./expenses-service
+        container_name: expenses-service
+        restart: unless-stopped
+        depends_on:
+            - postgres-expenses
+            - users-service
+            - categories-service
+        environment:
+            PORT: 8083
+            SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-expenses:5432/gastos
+            SPRING_DATASOURCE_USERNAME: postgres
+            SPRING_DATASOURCE_PASSWORD: 1234
+            JWT_SECRET: clave-super-secreta-para-testeo-1234567890
+        ports:
+            - "8083:8083"
+
+volumes:
+    postgres_users_data:
+    postgres_categories_data:
+    postgres_expenses_data:
