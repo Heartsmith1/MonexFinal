@@ -320,15 +320,3 @@ GET /api/expenses → Listar todos los gastos
 GET /api/expenses?paymentMethod=CREDITO&startDate=2026-05-01&endDate=2026-05-31 → Filtrar gastos
 GET /api/expenses/monthly-estimate → Ver estimación de pago mensual
 ```
-
-## Estado de la documentacion
-
-README actualizado segun los cambios realizados:
-- ✅ Migracion completada de MySQL a PostgreSQL
-- ✅ Agregado tercer microservicio (bknd-expenses)
-- ✅ Actualización de puertos y configuración
-- ✅ Documentación de prerrequisitos y pasos de ejecución
-- ✅ Endpoints de configuración de tarjeta agregados (Bknd_User)
-- ✅ Filtros y búsquedas avanzadas documentados (bknd-expenses)
-- ✅ Soporte para múltiples métodos de pago documentado
-- ✅ Flujo de uso recomendado agregado
